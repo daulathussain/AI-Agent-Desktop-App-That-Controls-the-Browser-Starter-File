@@ -1,0 +1,106 @@
+{
+  "name": "ai-desktop-agent",
+  "version": "1.0.0",
+  "description": "AI-powered desktop browser automation agent",
+  "main": "dist/electron/main.js",
+  "homepage": "./",
+  "author": "AI Agent",
+  "license": "MIT",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:ui\" \"npm run dev:electron\"",
+    "dev:ui": "vite --port 3000",
+    "dev:electron": "wait-on http://localhost:3000 && tsc -p tsconfig.electron.json && electron .",
+    "build": "npm run build:ui && npm run build:electron",
+    "build:ui": "vite build",
+    "build:electron": "tsc -p tsconfig.electron.json",
+    "dist:mac": "npm run build && electron-builder --mac",
+    "dist:win": "npm run build && electron-builder --win",
+    "dist:all": "npm run build && electron-builder --mac --win",
+    "typecheck": "tsc --noEmit",
+    "clear": "rm -rf node_modules package-lock.json "
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.32.1",
+    "@google/generative-ai": "^0.21.0",
+    "axios": "^1.7.7",
+    "electron-store": "^8.1.0",
+    "keytar": "^7.9.0",
+    "openai": "^4.67.3",
+    "playwright": "^1.48.2",
+    "uuid": "^10.0.0",
+    "ws": "^8.19.0",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "@types/node": "^22.9.0",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@types/uuid": "^10.0.0",
+    "@types/ws": "^8.18.1",
+    "@vitejs/plugin-react": "^4.3.3",
+    "concurrently": "^9.1.0",
+    "electron": "^33.2.0",
+    "electron-builder": "^25.1.8",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.11",
+    "wait-on": "^8.0.1"
+  },
+  "build": {
+    "appId": "com.aiagent.desktop",
+    "productName": "AI Desktop Agent",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "resources/**/*",
+      "node_modules/**/*",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "node_modules/playwright/.local-browsers",
+        "to": "browsers",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ],
+    "mac": {
+      "category": "public.app-category.productivity",
+      "icon": "resources/icon.icns",
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ],
+      "entitlements": "resources/entitlements.mac.plist",
+      "entitlementsInherit": "resources/entitlements.mac.plist",
+      "hardenedRuntime": true,
+      "extendInfo": {
+        "NSMicrophoneUsageDescription": "AI Desktop Agent uses your microphone for voice commands to control the browser agent."
+      }
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "resources/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  }
+}
